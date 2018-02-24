@@ -140,16 +140,16 @@ public class DetailActivity extends BaseActivity {
     private void setSpeakerSocialNetworkHandle(Speaker speaker, DetailViewSpeakerInfoElementBinding speakerInfoElementBinding) {
         if (speaker.socialNetworkHandles != null && speaker.socialNetworkHandles.size() > 0) {
             for (final SocialNetworkHandle socialNetworkHandle : speaker.socialNetworkHandles) {
-                if (socialNetworkHandle.networkType != SocialNetworkHandle.SocialNetworkType.Unknown) {
+                if (socialNetworkHandle.getNetworkType() != SocialNetworkHandle.SocialNetworkType.Unknown) {
                     final SmallSocialImageBinding smallSocialImageBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.small_social_image, null, false);
                     smallSocialImageBinding.setSocialHandle(socialNetworkHandle);
                     smallSocialImageBinding.image.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             if (BuildConfig.DEBUG) {
-                                Log.d(DetailActivity.class.getName(), "User clicked on social handle with name=" + socialNetworkHandle.networkType.name());
+                                Log.d(DetailActivity.class.getName(), "User clicked on social handle with name=" + socialNetworkHandle.getNetworkType().name());
                             }
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(socialNetworkHandle.link)));
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(socialNetworkHandle.getLink())));
                         }
                     });
                     speakerInfoElementBinding.speakerSocialNetworkHandleLayout.addView(smallSocialImageBinding.getRoot());
