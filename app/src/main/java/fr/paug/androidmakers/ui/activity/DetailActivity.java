@@ -81,11 +81,11 @@ public class DetailActivity extends BaseActivity {
         final String sessionDate = DateUtils.formatDateRange(this, new Formatter(getResources().getConfiguration().locale), sessionStartDateInMillis, sessionEndDateInMillis, DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY | DateUtils.FORMAT_SHOW_TIME, null).toString();
         final String sessionDateAndRoom = sessionRoom != null && !TextUtils.isEmpty(sessionRoom.getName()) ? getString(R.string.sessionDateWithRoomPlaceholder, sessionDate, sessionRoom.getName()) : sessionDate;
 
-        activityDetailBinding.sessionTitle.setText(session.title);
+        activityDetailBinding.sessionTitle.setText(session.getTitle());
         activityDetailBinding.sessionDateAndRoom.setText(sessionDateAndRoom);
         activityDetailBinding.sessionDescription.setMovementMethod(LinkMovementMethod.getInstance());
-        activityDetailBinding.sessionDescription.setText(session.description != null ?
-                Html.fromHtml(session.description) : "");
+        activityDetailBinding.sessionDescription.setText(session.getDescription() != null ?
+                Html.fromHtml(session.getDescription()) : "");
 
         final int languageFullNameRes = session.getLanguageName();
         if (languageFullNameRes != 0) {
@@ -94,7 +94,7 @@ public class DetailActivity extends BaseActivity {
                 @Override
                 public void onChipClick(View view) {
                     if (BuildConfig.DEBUG) {
-                        Log.d(DetailActivity.class.getName(), "User clicked on tag with content=" + session.language);
+                        Log.d(DetailActivity.class.getName(), "User clicked on tag with content=" + session.getLanguage());
                     }
                 }
             });
@@ -102,21 +102,21 @@ public class DetailActivity extends BaseActivity {
             activityDetailBinding.sessionLanguage.setVisibility(View.GONE);
         }
 
-        activityDetailBinding.sessionType.setChipText(session.subtype);
+        activityDetailBinding.sessionType.setChipText(session.getSubtype());
         activityDetailBinding.sessionType.setOnChipClickListener(new OnChipClickListener() {
             @Override
             public void onChipClick(View view) {
                 if (BuildConfig.DEBUG) {
-                    Log.d(DetailActivity.class.getName(), "User clicked on tag with content=" + session.subtype);
+                    Log.d(DetailActivity.class.getName(), "User clicked on tag with content=" + session.getSubtype());
                 }
                 // TODO: Use this for future filter feature
             }
         });
 
         final ViewGroup sessionSpeakerLayout = findViewById(R.id.sessionSpeakerLayout);
-        if (session.speakers != null && session.speakers.length > 0) {
-            activityDetailBinding.speakersTitle.setText(getResources().getQuantityString(R.plurals.session_details_speakers, session.speakers.length));
-            for (final int speakerID : session.speakers) {
+        if (session.getSpeakers() != null && session.getSpeakers().length > 0) {
+            activityDetailBinding.speakersTitle.setText(getResources().getQuantityString(R.plurals.session_details_speakers, session.getSpeakers().length));
+            for (final int speakerID : session.getSpeakers()) {
                 final Speaker speaker = AgendaRepository.getInstance().getSpeaker(speakerID);
 
                 if (speaker == null) {
@@ -163,16 +163,16 @@ public class DetailActivity extends BaseActivity {
     private void setSpeakerRibbons(Speaker speaker, DetailViewSpeakerInfoElementBinding speakerInfoElementBinding) {
         if (speaker.ribbonList != null && speaker.ribbonList.size() > 0) {
             for (final Ribbon ribbon : speaker.ribbonList) {
-                if (ribbon.ribbonType != Ribbon.RibbonType.NONE) {
+                if (ribbon.getRibbonType() != Ribbon.RibbonType.NONE) {
                     final SmallRibbonImageBinding smallRibbonImageBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.small_ribbon_image, null, false);
                     smallRibbonImageBinding.setRibbon(ribbon);
                     smallRibbonImageBinding.image.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             if (BuildConfig.DEBUG) {
-                                Log.d(DetailActivity.class.getName(), "User clicked on ribbon with name=" + ribbon.ribbonType.name());
+                                Log.d(DetailActivity.class.getName(), "User clicked on ribbon with name=" + ribbon.getRibbonType().name());
                             }
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(ribbon.link)));
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(ribbon.getLink())));
                         }
                     });
                     speakerInfoElementBinding.speakerRibbonLayout.addView(smallRibbonImageBinding.getRoot());
@@ -186,7 +186,7 @@ public class DetailActivity extends BaseActivity {
     private void setActionBar(Session session) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(session.title);
+            getSupportActionBar().setTitle(session.getTitle());
         }
     }
 

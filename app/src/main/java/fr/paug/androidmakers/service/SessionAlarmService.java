@@ -175,7 +175,7 @@ public class SessionAlarmService extends IntentService {
         notifIntent.putExtra(EXTRA_SESSION_END, sessionEnd);
         LOGD(TAG, "-> Intent extra: session end " + sessionEnd);
         notifIntent.putExtra(EXTRA_SESSION_ID, sessionId);
-        notifIntent.putExtra(EXTRA_NOTIF_TITLE, sessionToNotify.title);
+        notifIntent.putExtra(EXTRA_NOTIF_TITLE, sessionToNotify.getTitle());
         notifIntent.putExtra(EXTRA_NOTIF_CONTENT, roomName + sessionDate);
 
         PendingIntent pi = PendingIntent.getService(this, sessionId, notifIntent,

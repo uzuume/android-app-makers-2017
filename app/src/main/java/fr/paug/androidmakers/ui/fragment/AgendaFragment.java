@@ -121,7 +121,7 @@ public class AgendaFragment extends Fragment implements AgendaView.AgendaClickLi
         final Set<String> fullLengthLanguageName = new HashSet<>();
 
         for (final String languageAbbreviated : allLanguageAbreviated) {
-            final int languageStringRes = Session.getLanguageFullName(languageAbbreviated);
+            final int languageStringRes = Session.Companion.getLanguageFullName(languageAbbreviated);
             if (languageStringRes != 0) {
                 fullLengthLanguageName.add(getString(languageStringRes)); //FIXME Fragment AgendaFragment{7ca9acc} not attached to Activity (when changing data in firebase db x) )
             }
@@ -258,7 +258,7 @@ public class AgendaFragment extends Fragment implements AgendaView.AgendaClickLi
 
     private String getTitle(int sessionId) {
         Session session = AgendaRepository.getInstance().getSession(sessionId);
-        return session == null ? "?" : session.title;
+        return session == null ? "?" : session.getTitle();
     }
 
     private static class RefreshRunnable implements Runnable {
