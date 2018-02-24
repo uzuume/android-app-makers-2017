@@ -66,9 +66,9 @@ abstract class AbstractVenueFragment extends Fragment implements View.OnClickLis
     protected String getVenueDescription() {
         Locale fr = Locale.FRENCH;
         if (Locale.getDefault().getLanguage() == fr.getLanguage()) {
-            return getVenueInformations().descriptionFr;
+            return getVenueInformations().getDescriptionFr();
         } else {
-            return getVenueInformations().description;
+            return getVenueInformations().getDescription();
         }
     }
 
