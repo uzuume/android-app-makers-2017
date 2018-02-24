@@ -138,8 +138,8 @@ public class DetailActivity extends BaseActivity {
     }
 
     private void setSpeakerSocialNetworkHandle(Speaker speaker, DetailViewSpeakerInfoElementBinding speakerInfoElementBinding) {
-        if (speaker.socialNetworkHandles != null && speaker.socialNetworkHandles.size() > 0) {
-            for (final SocialNetworkHandle socialNetworkHandle : speaker.socialNetworkHandles) {
+        if (speaker.getSocialNetworkHandles() != null && speaker.getSocialNetworkHandles().size() > 0) {
+            for (final SocialNetworkHandle socialNetworkHandle : speaker.getSocialNetworkHandles()) {
                 if (socialNetworkHandle.getNetworkType() != SocialNetworkHandle.SocialNetworkType.Unknown) {
                     final SmallSocialImageBinding smallSocialImageBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.small_social_image, null, false);
                     smallSocialImageBinding.setSocialHandle(socialNetworkHandle);
@@ -161,8 +161,8 @@ public class DetailActivity extends BaseActivity {
     }
 
     private void setSpeakerRibbons(Speaker speaker, DetailViewSpeakerInfoElementBinding speakerInfoElementBinding) {
-        if (speaker.ribbonList != null && speaker.ribbonList.size() > 0) {
-            for (final Ribbon ribbon : speaker.ribbonList) {
+        if (speaker.getRibbonList() != null && speaker.getRibbonList().size() > 0) {
+            for (final Ribbon ribbon : speaker.getRibbonList()) {
                 if (ribbon.getRibbonType() != Ribbon.RibbonType.NONE) {
                     final SmallRibbonImageBinding smallRibbonImageBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.small_ribbon_image, null, false);
                     smallRibbonImageBinding.setRibbon(ribbon);
