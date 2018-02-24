@@ -167,7 +167,7 @@ public class FirebaseDataConverted {
         for (Object value : values) {
             if (value instanceof Map) {
                 Map map = (Map) value;
-                final PartnerGroup.PartnerType partnerGroup = PartnerGroup.getPartnerTypeFromString(getString(map, "group"));
+                final PartnerGroup.PartnerType partnerGroup = PartnerGroup.Companion.getPartnerTypeFromString(getString(map, "group"));
                 final List<Partners> partnersList = getPartnerList(map, "elements");
                 if (partnerGroup != PartnerGroup.PartnerType.Unknown && partnersList != null && partnersList.size() > 0) {
                     mPartners.put(partnerGroup, new PartnerGroup(partnerGroup, partnersList));

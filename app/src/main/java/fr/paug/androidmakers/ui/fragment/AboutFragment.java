@@ -185,10 +185,10 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         if (partnersList != null && partnersList.size() > 0) {
             final LinearLayout partnersGroupLinearLayout = (LinearLayout) LayoutInflater.from(getContext()).inflate(R.layout.partners_group, null);
             final TextView partnerGroupHeader = partnersGroupLinearLayout.findViewById(R.id.partners_title);
-            partnerGroupHeader.setText(partnerGroup.getPartnerType().getName());
+            partnerGroupHeader.setText(partnerGroup.getPartnerType().getPartnerTypeName());
 
             final LinearLayout partnerLogoLayout = partnersGroupLinearLayout.findViewById(R.id.partners_layout);
-            final int partnerLogoSizePriority = partnerGroup.getPartnerType().getPartnerLogoSizePriority();
+            final int partnerLogoSizePriority = partnerGroup.getPartnerType().getPartnerLogoSize();
             for (int index = 0; index < partnersList.size(); index += partnerLogoSizePriority) {
                 final LinearLayout partnerRow = (LinearLayout) LayoutInflater.from(getContext()).inflate(R.layout.partner_row, null);
                 partnerRow.setWeightSum(partnerLogoSizePriority);
