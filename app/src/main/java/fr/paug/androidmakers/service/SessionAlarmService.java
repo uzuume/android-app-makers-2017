@@ -101,15 +101,15 @@ public class SessionAlarmService extends IntentService {
                 // first unschedule all sessions
                 // this is done in case the session slot has changed
                 for (ScheduleSlot scheduleSlot : scheduleSlots) {
-                    unscheduleAlarm(scheduleSlot.sessionId);
+                    unscheduleAlarm(scheduleSlot.getSessionId());
                 }
 
                 for (String id : SessionSelector.getInstance().getSessionsSelected()) {
                     ScheduleSlot scheduleSlot = AgendaRepository.getInstance().getScheduleSlot(id);
                     if (scheduleSlot != null) {
                         Log.i("SessionAlarmService", scheduleSlot.toString());
-                        scheduleAlarm(scheduleSlot.startDate, scheduleSlot.endDate,
-                                scheduleSlot.sessionId, false);
+                        scheduleAlarm(scheduleSlot.getStartDate(), scheduleSlot.getEndDate(),
+                                scheduleSlot.getSessionId(), false);
                     }
                 }
             }
@@ -155,13 +155,13 @@ public class SessionAlarmService extends IntentService {
 
         final String sessionDate = DateUtils.formatDateRange(this,
                 new Formatter(Locale.getDefault()),
-                slotToNotify.startDate,
-                slotToNotify.endDate,
+                slotToNotify.getStartDate(),
+                slotToNotify.getEndDate(),
                 DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY | DateUtils.FORMAT_SHOW_TIME,
                 null).toString();
 
-        final Room room = AgendaRepository.getInstance().getRoom(slotToNotify.room);
-        final String roomName = ((room != null) ? room.name : "") + " - ";
+        final Room room = AgendaRepository.getInstance().getRoom(slotToNotify.getRoom());
+        final String roomName = ((room != null) ? room.getName() : "") + " - ";
 
         LOGD(TAG, "Scheduling alarm for " + alarmTime + " = " + (new Date(alarmTime)).toString());
 

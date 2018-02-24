@@ -135,7 +135,7 @@ public class AgendaFragment extends Fragment implements AgendaView.AgendaClickLi
         final List<ScheduleSlot> scheduleSlots = AgendaRepository.getInstance().getScheduleSlots();
         for (final ScheduleSlot scheduleSlot : scheduleSlots) {
             if (languageFilter != null) {
-                final int sessionId = scheduleSlot.sessionId;
+                final int sessionId = scheduleSlot.getSessionId();
                 final Session session = AgendaRepository.getInstance().getSession(sessionId);
                 if (session == null || session.getLanguageName() == 0 || !languageFilter.equals(getString(session.getLanguageName()))) {
                     // skip this session
@@ -145,7 +145,7 @@ public class AgendaFragment extends Fragment implements AgendaView.AgendaClickLi
 
             final List<AgendaView.Item> agendaItems = getAgendaItems(
                     itemByDayOfTheYear, calendar, scheduleSlot);
-            agendaItems.add(new AgendaView.Item(scheduleSlot, getTitle(scheduleSlot.sessionId)));
+            agendaItems.add(new AgendaView.Item(scheduleSlot, getTitle(scheduleSlot.getSessionId())));
         }
 
         final List<AgendaView.DaySchedule> items = getItemsOrdered(itemByDayOfTheYear);
@@ -204,17 +204,17 @@ public class AgendaFragment extends Fragment implements AgendaView.AgendaClickLi
                 getRoomScheduleForDay(itemByDayOfTheYear, calendar, scheduleSlot);
         AgendaView.RoomSchedule roomScheduleForThis = null;
         for (AgendaView.RoomSchedule roomSchedule : roomSchedules) {
-            if (roomSchedule.getRoomId() == scheduleSlot.room) {
+            if (roomSchedule.getRoomId() == scheduleSlot.getRoom()) {
                 roomScheduleForThis = roomSchedule;
                 break;
             }
         }
         if (roomScheduleForThis == null) {
             List<AgendaView.Item> agendaItems = new ArrayList<>();
-            Room room = AgendaRepository.getInstance().getRoom(scheduleSlot.room);
-            String titleRoom = (room == null) ? null : room.name;
+            Room room = AgendaRepository.getInstance().getRoom(scheduleSlot.getRoom());
+            String titleRoom = (room == null) ? null : room.getName();
             roomScheduleForThis = new AgendaView.RoomSchedule(
-                    scheduleSlot.room, titleRoom, agendaItems);
+                    scheduleSlot.getRoom(), titleRoom, agendaItems);
             roomSchedules.add(roomScheduleForThis);
             Collections.sort(roomSchedules);
             return agendaItems;
@@ -226,7 +226,7 @@ public class AgendaFragment extends Fragment implements AgendaView.AgendaClickLi
     private List<AgendaView.RoomSchedule> getRoomScheduleForDay(
             SparseArray<AgendaView.DaySchedule> itemByDayOfTheYear,
             Calendar calendar, ScheduleSlot scheduleSlot) {
-        calendar.setTimeInMillis(scheduleSlot.startDate);
+        calendar.setTimeInMillis(scheduleSlot.getStartDate());
         int dayIndex = calendar.get(Calendar.DAY_OF_YEAR) + calendar.get(Calendar.YEAR) * 1000;
         AgendaView.DaySchedule daySchedule = itemByDayOfTheYear.get(dayIndex);
         if (daySchedule == null) {

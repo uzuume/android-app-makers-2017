@@ -79,7 +79,7 @@ public class DetailActivity extends BaseActivity {
         }
 
         final String sessionDate = DateUtils.formatDateRange(this, new Formatter(getResources().getConfiguration().locale), sessionStartDateInMillis, sessionEndDateInMillis, DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY | DateUtils.FORMAT_SHOW_TIME, null).toString();
-        final String sessionDateAndRoom = sessionRoom != null && !TextUtils.isEmpty(sessionRoom.name) ? getString(R.string.sessionDateWithRoomPlaceholder, sessionDate, sessionRoom.name) : sessionDate;
+        final String sessionDateAndRoom = sessionRoom != null && !TextUtils.isEmpty(sessionRoom.getName()) ? getString(R.string.sessionDateWithRoomPlaceholder, sessionDate, sessionRoom.getName()) : sessionDate;
 
         activityDetailBinding.sessionTitle.setText(session.title);
         activityDetailBinding.sessionDateAndRoom.setText(sessionDateAndRoom);

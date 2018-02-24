@@ -106,7 +106,7 @@ public class AgendaRepository {
     @Nullable
     public ScheduleSlot getScheduleSlot(int id) {
         for (ScheduleSlot slot : mFirebaseDataConverted.getScheduleSlots()) {
-            if (slot.sessionId == id) {
+            if (slot.getSessionId() == id) {
                 return slot;
             }
         }
