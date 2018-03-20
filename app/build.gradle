@@ -5,12 +5,14 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "fr.paug.androidmakers"
+        applicationIdSuffix ".preprod"
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 7
         versionName "1.0.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled true
