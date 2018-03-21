@@ -76,5 +76,7 @@
     <string name="other_sponsor">Other Sponsor</string>
     <string name="media_sponsor">Media</string>
     <string name="location_sponsor">Location</string>
+    <string name="bot_hello">Hello ! Please ask a question regarding the Android Makers sessions.</string>
+    <string name="bot_text_hint">Ask a question</string>
 
 </resources>
