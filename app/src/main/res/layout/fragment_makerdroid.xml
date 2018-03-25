@@ -15,20 +15,20 @@
             android:id="@+id/bot_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/padding"
+            android:paddingBottom="@dimen/default_padding"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_margin="@dimen/padding_double">
+                android:layout_margin="@dimen/large_padding">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_bothead"
-                    android:layout_marginRight="@dimen/padding_double"
+                    android:layout_marginRight="@dimen/large_padding"
                     android:layout_gravity="center"
                     />
 
@@ -63,7 +63,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="@dimen/padding"
+            android:layout_margin="@dimen/default_padding"
             android:background="@color/white"
             >
 
@@ -103,7 +103,7 @@
             android:layout_height="match_parent"
             android:layout_toLeftOf="@id/bot_layout_icons"
             android:hint="@string/bot_text_hint"
-            android:padding="@dimen/padding_double"
+            android:padding="@dimen/large_padding"
             />
     </RelativeLayout>
 

@@ -21,7 +21,6 @@ import android.widget.Toast;
 import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
@@ -43,9 +42,6 @@ import fr.paug.androidmakers.manager.AgendaRepository;
 import fr.paug.androidmakers.model.Room;
 import fr.paug.androidmakers.model.ScheduleSlot;
 import fr.paug.androidmakers.model.Session;
-import fr.paug.androidmakers.model.Speaker;
-import fr.paug.androidmakers.ui.activity.DetailActivity;
-import fr.paug.androidmakers.ui.view.AgendaView;
 
 /**
  * Created by Jade on 20/03/2018
@@ -80,8 +76,8 @@ public class MakerDroidFragment extends Fragment implements AIListener {
     private String[] permissions = {Manifest.permission.RECORD_AUDIO};
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
 
-    private int padding;
-    private int paddingDouble;
+    private int defaultPadding;
+    private int largePadding;
     private LinearLayout.LayoutParams paramsQuestion;
     private LinearLayout.LayoutParams paramsAnswer;
 
@@ -117,22 +113,22 @@ public class MakerDroidFragment extends Fragment implements AIListener {
             }
         });
 
-        padding = (int) getResources().getDimension(R.dimen.padding);
-        paddingDouble = (int) getResources().getDimension(R.dimen.padding_double);
+        defaultPadding = (int) getResources().getDimension(R.dimen.default_padding);
+        largePadding = (int) getResources().getDimension(R.dimen.large_padding);
 
         paramsQuestion = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT);
         paramsQuestion.weight = 1.0f;
         paramsQuestion.gravity = Gravity.RIGHT;
-        paramsQuestion.setMargins(paddingDouble, 0, paddingDouble, paddingDouble);
+        paramsQuestion.setMargins(largePadding, 0, largePadding, largePadding);
 
         paramsAnswer = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT);
         paramsAnswer.weight = 1.0f;
         paramsAnswer.gravity = Gravity.LEFT;
-        paramsAnswer.setMargins(paddingDouble, 0, paddingDouble, paddingDouble);
+        paramsAnswer.setMargins(largePadding, 0, largePadding, largePadding);
 
 
         return view;
@@ -259,7 +255,7 @@ public class MakerDroidFragment extends Fragment implements AIListener {
         tvQuestion.setText(text);
         tvQuestion.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_bot_question));
         tvQuestion.setLayoutParams(paramsQuestion);
-        tvQuestion.setPadding(padding, padding, padding, padding);
+        tvQuestion.setPadding(defaultPadding, defaultPadding, defaultPadding, defaultPadding);
         botLayout.addView(tvQuestion);
         tvQuestion.requestFocus();
     }
@@ -271,7 +267,7 @@ public class MakerDroidFragment extends Fragment implements AIListener {
         tvAnswer.setText(text);
         tvAnswer.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_bot_answer));
         tvAnswer.setLayoutParams(paramsAnswer);
-        tvAnswer.setPadding(padding, padding, padding, padding);
+        tvAnswer.setPadding(defaultPadding, defaultPadding, defaultPadding, defaultPadding);
         botLayout.addView(tvAnswer);
         tvAnswer.requestFocus();
 
@@ -320,19 +316,19 @@ public class MakerDroidFragment extends Fragment implements AIListener {
 
         HorizontalScrollView hScrollView = new HorizontalScrollView(getContext());
         hScrollView.setLayoutParams(defaultWrapParams);
-        hScrollView.setPadding(0,0,0,paddingDouble);
+        hScrollView.setPadding(0,0,0, largePadding);
 
         LinearLayout ll = new LinearLayout(getContext());
         ll.setOrientation(LinearLayout.HORIZONTAL);
         ll.setLayoutParams(defaultWrapParams);
-        ll.setPadding(paddingDouble, 0, paddingDouble, 0);
+        ll.setPadding(largePadding, 0, largePadding, 0);
 
 
 
         LinearLayout.LayoutParams viewParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT);
-        viewParams.setMargins(padding, 0, padding, 0);
+        viewParams.setMargins(defaultPadding, 0, defaultPadding, 0);
 
 
         for (ScheduleSlot slot : slots) {
@@ -359,7 +355,7 @@ public class MakerDroidFragment extends Fragment implements AIListener {
         LinearLayout ll = new LinearLayout(getContext());
         ll.setOrientation(LinearLayout.VERTICAL);
         ll.setLayoutParams(defaultWrapParams);
-        ll.setPadding(paddingDouble, 0, paddingDouble, paddingDouble);
+        ll.setPadding(largePadding, 0, largePadding, largePadding);
 
 
         LinearLayout.LayoutParams contentParams = new LinearLayout.LayoutParams(
@@ -390,13 +386,13 @@ public class MakerDroidFragment extends Fragment implements AIListener {
 
             tvSession.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_bot_list));
             tvSession.setLayoutParams(contentParams);
-            tvSession.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AgendaView.Item item = new AgendaView.Item(slot, session.title);
-                    DetailActivity.startActivity(getActivity(), item);
-                }
-            });
+//            tvSession.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    AgendaView.Item item = new AgendaView.Item(slot, session.title);
+//                    DetailActivity.startActivity(getActivity(), item);
+//                }
+//            });
             ll.addView(tvSession);
         }
 
