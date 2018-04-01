@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,11 +80,10 @@ public class AgendaFragment extends Fragment {
         for (final ScheduleSlot scheduleSlot : scheduleSlots) {
             final List<ScheduleSession> agendaScheduleSessions = getAgendaItems(
                     itemByDayOfTheYear, calendar, scheduleSlot);
-            agendaScheduleSessions.add(new ScheduleSession(scheduleSlot, getTitle(scheduleSlot.sessionId)));
+            agendaScheduleSessions.add(new ScheduleSession(scheduleSlot, getTitle(scheduleSlot.sessionId), getLanguage(scheduleSlot.sessionId)));
         }
 
         final List<DaySchedule> days = getItemsOrdered(itemByDayOfTheYear);
-        Log.d("days items", days.toString());
 
         final AgendaPagerAdapter adapter = new AgendaPagerAdapter(days, getActivity());
         mViewPager.setAdapter(adapter);
@@ -196,6 +194,11 @@ public class AgendaFragment extends Fragment {
     private String getTitle(int sessionId) {
         Session session = AgendaRepository.getInstance().getSession(sessionId);
         return session == null ? "?" : session.title;
+    }
+
+    private String getLanguage(int sessionId) {
+        Session session = AgendaRepository.getInstance().getSession(sessionId);
+        return session == null ? "?" : session.language;
     }
 
     private static class RefreshRunnable implements Runnable {

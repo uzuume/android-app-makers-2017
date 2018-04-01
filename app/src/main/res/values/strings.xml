@@ -11,6 +11,16 @@
     <string name="french">French</string>
 
     <!--Agenda-->
+    <plurals name="duration_hours">
+        <item quantity="one">%s hour</item>
+        <item quantity="other">%s hours</item>
+    </plurals>
+
+    <plurals name="duration_minutes">
+        <item quantity="one">%s minute</item>
+        <item quantity="other">%s minutes</item>
+    </plurals>
+
     <string name="ImageDesc_speaker_avatar">Speaker picture</string>
     <string name="ImageDesc_social_network_image">social network image</string>
     <string name="Detail_sessionNotFound">Unable to retrieve this session information.</string>
@@ -22,11 +32,11 @@
     <string name="filter_language_header">Language</string>
     <string name="filter_language_all">All</string>
 
-    <string name="star_session">Star session</string>
-    <string name="unstar_session">Unstar session</string>
-
     <string name="session_selected">Session added to favorites</string>
     <string name="session_deselected">Session removed of favorites</string>
+
+    <string name="session_description_placeholder_with_language" translatable="false">%1$s / %2$s / %3$s</string>
+    <string name="session_description_placeholder" translatable="false">%1$s / %2$s</string>
 
     <string name="share">Share the session</string>
 
@@ -48,7 +58,10 @@
 
     <string name="social">Social</string>
 
-    <string name="twitter_hashtag" translatable="false">#AndroidMakers</string>
+    <string name="twitter_hashtag" translatable="false">#AndroidMakers2</string>
+    <string name="twitter_hashtag_for_query" translatable="false">AndroidMakers2</string>
+    <string name="twitter_user_name" translatable="false">AndroidMakersFR</string>
+
     <string name="gplus" translatable="false">https://plus.google.com/+DroidconParis</string>
     <string name="fbevent" translatable="false">https://www.facebook.com/events/392002394567921/</string>
     <string name="ytchannel" translatable="false">https://www.youtube.com/channel/UCkatLlah5weIpN23LqMgdTg</string>
@@ -70,15 +83,5 @@
     <string name="location_sponsor">Location</string>
     <string name="bot_hello">Hello ! Please ask a question regarding the Android Makers sessions.</string>
     <string name="bot_text_hint">Ask a question</string>
-
-    <plurals name="duration_hours">
-        <item quantity="one">%s hour</item>
-        <item quantity="other">%s hours</item>
-    </plurals>
-
-    <plurals name="duration_minutes">
-        <item quantity="one">%s minute</item>
-        <item quantity="other">%s minutes</item>
-    </plurals>
 
 </resources>
