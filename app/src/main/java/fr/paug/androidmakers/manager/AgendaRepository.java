@@ -118,24 +118,17 @@ public class AgendaRepository {
         return null;
     }
 
+    /* need to remove it, if we choose java8' implementation*/
     @Nullable
-    public List<ScheduleSlot> filtredScheduleSlot(long startDate) {
-        List<ScheduleSlot> slots = mFirebaseDataConverted.getScheduleSlots();
-        List<ScheduleSlot> result = slots.stream()                // convert list to stream
-                .filter(slot -> startDate == (slot.startDate))
-                .collect(Collectors.toList());              // collect the output and convert streams to a List
-
-        return  result;
-
-       /* before java 8
-
+    public List<ScheduleSlot> filtredScheduleSlot(long startDate , String userlang) {
+       /* before java 8 */
        List<ScheduleSlot> slots =  new ArrayList<>();
         for (ScheduleSlot slot : mFirebaseDataConverted.getScheduleSlots()) {
             if (slot.startDate == startDate) {
                 slots.add(slot);
             }
         }
-        return slots;*/
+        return slots;
     }
 
 

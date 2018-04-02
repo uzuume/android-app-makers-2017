@@ -97,6 +97,7 @@ public class MakerDroidFragment extends Fragment implements AIListener {
     // Requesting permission to RECORD_AUDIO
     private String[] permissions = {Manifest.permission.RECORD_AUDIO};
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    final long currentTime = new Date().getTime();
 
     private int defaultPadding;
     private int largePadding;
@@ -326,14 +327,12 @@ public class MakerDroidFragment extends Fragment implements AIListener {
             if (parameters.get(LANGUAGE_PARAMETER_KEY) != null) {
                 String userLang = parameters.get(LANGUAGE_PARAMETER_KEY).getAsString();
                 String sessionTime = parameters.get(CUSTOM_TIME_PARAMETER_KEY).getAsString();
-                final long currentTime = new Date().getTime();
-                long nextTime = currentTime;
 
                 if (getResources().getString(R.string.bot_current_questions).equalsIgnoreCase(sessionTime)){
-                    return  treatCurrentSessionQuestions(sessionTime);
+                    return  treatCurrentSessionQuestions(sessionTime,userLang);
 
                 }else if ((getResources().getString(R.string.bot_next_questions).equalsIgnoreCase(sessionTime))){
-                    return  treatNextSessionQuestions();
+                    return  treatNextSessionQuestions(userLang);
                 }
 
                 String returnedMsg = "I can filter by sessions for now";
@@ -350,56 +349,60 @@ public class MakerDroidFragment extends Fragment implements AIListener {
     }
 
 
-    private String treatCurrentSessionQuestions(String sessionTime){
+    private String treatCurrentSessionQuestions(String sessionTime, String userlang){
 
         List<ScheduleSlot> resultSessions = new ArrayList<>();
-        final long currentTime = 1524470700000l;
 
-        //new Date().getTime();
-        //1524470700000l for test session (23/04 à 9h:05)!!
+        //currentTime : 1524470700000l for test session (23/04 à 9h:05)!!
 
-        List<ScheduleSlot> slots = AgendaRepository.getInstance().getScheduleSlots();
+        List<ScheduleSlot> slots = filtredSlotByLanguage(userlang);
+
         resultSessions = slots.stream()
                 .peek(num -> System.out.println("will filter " + num))
-                .filter(x -> AgendaRepository.getInstance().getSession(x.sessionId) != null)
-                .filter(x -> AgendaRepository.getInstance().getSession(x.sessionId).language != null)
-                .filter(x -> x.startDate <= currentTime )
-                .filter(x -> x.endDate > currentTime)
+                .filter(x -> x.startDate <= currentTime
+                            && x.endDate > currentTime )
                 .collect(Collectors.toList());
 
+        //
         /* before Java 8*/
-        /* for (ScheduleSlot slot : AgendaRepository.getInstance().getScheduleSlots()) {
+         /*for (ScheduleSlot slot : AgendaRepository.getInstance().getScheduleSlots()) {
             Session session = AgendaRepository.getInstance().getSession(slot.sessionId);
             if (session != null && session.language != null ) {
-
-                if (slot.startDate <= currentTime && slot.endDate > currentTime){
-                    resultSessions.add(slot);
+                if (getResources().getString(Session.getLanguageFullName(session.language)).equalsIgnoreCase(userlang)){
+                    if (slot.startDate <= currentTime && slot.endDate > currentTime){
+                        resultSessions.add(slot);
+                    }
                 }
             }
-          }
-          */
+          }*/
+
         addListView(resultSessions);
         return "current sessions are " + resultSessions.size() + "/" + AgendaRepository.getInstance().getScheduleSlots().size() + " sessions " ;
     }
 
 
-    private String treatNextSessionQuestions(){
-        /* for test 1524466800000l <- 23/04 à 8h  */
-        List<ScheduleSlot> resultSessions = new ArrayList<>();
-        final long currentTime = 1524466800000l ;
-        long nextStartSessiontime = 0l;
+    private String treatNextSessionQuestions(String userlang){
 
-        List<ScheduleSlot> slots = AgendaRepository.getInstance().getScheduleSlots();
+        /* for test currentTime : 1524466800000l <- 23/04 à 8h  */
+        List<ScheduleSlot> filtredByLanguage = filtredSlotByLanguage(userlang);
 
-        ScheduleSlot a = slots.stream()
+
+        /* retrieve the next session' startDate */
+        ScheduleSlot a = filtredByLanguage
+                .stream()
                 .peek(num -> System.out.println("will filter " + num))
-                .filter(x -> AgendaRepository.getInstance().getSession(x.sessionId) != null)
-                .filter(x -> AgendaRepository.getInstance().getSession(x.sessionId).language != null)
                 .filter(x -> x.startDate > currentTime)
                 .findFirst()
                 .orElse(null);
 
+        /* retrieve all the next sessions start from X date */
+        List<ScheduleSlot> result = filtredByLanguage
+                .stream()// convert list to stream
+                .filter(slot -> a.startDate == (slot.startDate))
+                .collect(Collectors.toList());
+
     /* before Java8
+        long nextStartSessiontime = 0l;
         Collections.sort(slots);
         for (ScheduleSlot slot :slots ) {
             Session session = AgendaRepository.getInstance().getSession(slot.sessionId);
@@ -409,11 +412,25 @@ public class MakerDroidFragment extends Fragment implements AIListener {
                     break;
                 }
             }
-        }*/
+        }
+        resultSessions = AgendaRepository.getInstance().filtredScheduleSlot(nextStartSessiontime,userlang);
+        */
 
-        resultSessions = AgendaRepository.getInstance().filtredScheduleSlot(a.startDate);
-        addListView(resultSessions);
-        return "next session are " + resultSessions.size() + "/" + AgendaRepository.getInstance().getScheduleSlots().size() + " sessions " ;
+        addListView(result);
+        return "next sessions are " + result.size() + "/" + AgendaRepository.getInstance().getScheduleSlots().size() + " sessions " ;
+    }
+
+    private List<ScheduleSlot> filtredSlotByLanguage(String userlang){
+
+        List<ScheduleSlot> filtredByLanguage =  AgendaRepository.getInstance().getScheduleSlots()
+                .stream()
+                .filter(x -> AgendaRepository.getInstance().getSession(x.sessionId) != null
+                        && AgendaRepository.getInstance().getSession(x.sessionId).language != null
+                        && getResources().getString(Session.getLanguageFullName(AgendaRepository.getInstance().getSession(x.sessionId).language)).equalsIgnoreCase(userlang))
+                .sorted()
+                .collect(Collectors.toList());
+
+        return  filtredByLanguage;
     }
 
     private void processAiResponse(AIResponse aiResponse) {
