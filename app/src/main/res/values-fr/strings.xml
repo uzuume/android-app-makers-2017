@@ -70,9 +70,10 @@
     <string name="location_sponsor">Salle</string>
     <string name="venue_afterparty_tab">After Party</string>
     <string name="venue_conference_tab">Conférence</string>
+
+    <!--Bot-->
     <string name="bot_hello">Bonjour ! Veuillez poser une question en rapport avec les sessions d\'Android Makers.</string>
     <string name="bot_text_hint">Poser une question</string>
-
-
-
+    <string name="bot_current_questions">current</string>
+    <string name="bot_next_questions">next</string>
 </resources>

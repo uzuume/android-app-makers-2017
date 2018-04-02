@@ -1,6 +1,8 @@
 package fr.paug.androidmakers.model;
 
-public class ScheduleSlot {
+import android.support.annotation.NonNull;
+
+public class ScheduleSlot implements Comparable<ScheduleSlot>{
 
     public final int room;
     public final int sessionId;
@@ -24,4 +26,8 @@ public class ScheduleSlot {
                 '}';
     }
 
+    @Override
+    public int compareTo(@NonNull ScheduleSlot o) {
+        return Long.valueOf(startDate).compareTo(o.startDate);
+    }
 }

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import fr.paug.androidmakers.model.FirebaseDataConverted;
 import fr.paug.androidmakers.model.PartnerGroup;
@@ -116,6 +117,27 @@ public class AgendaRepository {
         }
         return null;
     }
+
+    @Nullable
+    public List<ScheduleSlot> filtredScheduleSlot(long startDate) {
+        List<ScheduleSlot> slots = mFirebaseDataConverted.getScheduleSlots();
+        List<ScheduleSlot> result = slots.stream()                // convert list to stream
+                .filter(slot -> startDate == (slot.startDate))
+                .collect(Collectors.toList());              // collect the output and convert streams to a List
+
+        return  result;
+
+       /* before java 8
+
+       List<ScheduleSlot> slots =  new ArrayList<>();
+        for (ScheduleSlot slot : mFirebaseDataConverted.getScheduleSlots()) {
+            if (slot.startDate == startDate) {
+                slots.add(slot);
+            }
+        }
+        return slots;*/
+    }
+
 
     @Nullable
     public ScheduleSlot getScheduleSlot(@NonNull String id) {

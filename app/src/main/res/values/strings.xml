@@ -81,7 +81,10 @@
     <string name="speaker_sponsor">Individual Speaker Sponsor</string>
     <string name="media_sponsor">Media</string>
     <string name="location_sponsor">Location</string>
+
+    <!--Bot-->
     <string name="bot_hello">Hello ! Please ask a question regarding the Android Makers sessions.</string>
     <string name="bot_text_hint">Ask a question</string>
-
+    <string name="bot_current_questions">current</string>
+    <string name="bot_next_questions">next</string>
 </resources>

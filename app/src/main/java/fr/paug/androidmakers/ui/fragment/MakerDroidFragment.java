@@ -28,12 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.JsonElement;
-
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import ai.api.AIDataService;
 import ai.api.AIListener;
@@ -63,7 +59,11 @@ import fr.paug.androidmakers.ui.adapter.ScheduleSession;
 
 public class MakerDroidFragment extends Fragment implements AIListener {
 
+
     private static final String TAG = MakerDroidFragment.class.getSimpleName();
+    private static final String LANGUAGE_PARAMETER_KEY = "language";
+    private static final String CUSTOM_TIME_PARAMETER_KEY = "custom-time";
+
 
     private Unbinder unbinder;
 
@@ -322,28 +322,21 @@ public class MakerDroidFragment extends Fragment implements AIListener {
     }
 
     private String treatQuestion(HashMap<String, JsonElement> parameters) {
-
-        List<ScheduleSlot> resultSessions = new ArrayList<>();
-
         try {
-            if (parameters.get("language") != null) {
-                String userLang = parameters.get("language").getAsString();
+            if (parameters.get(LANGUAGE_PARAMETER_KEY) != null) {
+                String userLang = parameters.get(LANGUAGE_PARAMETER_KEY).getAsString();
+                String sessionTime = parameters.get(CUSTOM_TIME_PARAMETER_KEY).getAsString();
+                final long currentTime = new Date().getTime();
+                long nextTime = currentTime;
 
-                for (ScheduleSlot slot : AgendaRepository.getInstance().getScheduleSlots()) {
-                    Session session = AgendaRepository.getInstance().getSession(slot.sessionId);
-                    if (session != null &&
-                            session.language != null &&
-                            getResources().getString(Session.getLanguageFullName(session.language)).equalsIgnoreCase(userLang)) {
-                        resultSessions.add(slot);
-                    }
+                if (getResources().getString(R.string.bot_current_questions).equalsIgnoreCase(sessionTime)){
+                    return  treatCurrentSessionQuestions(sessionTime);
+
+                }else if ((getResources().getString(R.string.bot_next_questions).equalsIgnoreCase(sessionTime))){
+                    return  treatNextSessionQuestions();
                 }
 
-                String returnedMsg = "I have " + resultSessions.size() + "/" + AgendaRepository.getInstance().getScheduleSlots().size() + " sessions " +
-                        "in " + userLang;
-
-//                addCarouselView(resultSessions);
-                addListView(resultSessions);
-
+                String returnedMsg = "I can filter by sessions for now";
                 Log.d(TAG, returnedMsg);
                 return returnedMsg;
             }
@@ -354,6 +347,73 @@ public class MakerDroidFragment extends Fragment implements AIListener {
             Log.e(TAG, e.getMessage());
             return "An error occurred, please try again.";
         }
+    }
+
+
+    private String treatCurrentSessionQuestions(String sessionTime){
+
+        List<ScheduleSlot> resultSessions = new ArrayList<>();
+        final long currentTime = 1524470700000l;
+
+        //new Date().getTime();
+        //1524470700000l for test session (23/04 à 9h:05)!!
+
+        List<ScheduleSlot> slots = AgendaRepository.getInstance().getScheduleSlots();
+        resultSessions = slots.stream()
+                .peek(num -> System.out.println("will filter " + num))
+                .filter(x -> AgendaRepository.getInstance().getSession(x.sessionId) != null)
+                .filter(x -> AgendaRepository.getInstance().getSession(x.sessionId).language != null)
+                .filter(x -> x.startDate <= currentTime )
+                .filter(x -> x.endDate > currentTime)
+                .collect(Collectors.toList());
+
+        /* before Java 8*/
+        /* for (ScheduleSlot slot : AgendaRepository.getInstance().getScheduleSlots()) {
+            Session session = AgendaRepository.getInstance().getSession(slot.sessionId);
+            if (session != null && session.language != null ) {
+
+                if (slot.startDate <= currentTime && slot.endDate > currentTime){
+                    resultSessions.add(slot);
+                }
+            }
+          }
+          */
+        addListView(resultSessions);
+        return "current sessions are " + resultSessions.size() + "/" + AgendaRepository.getInstance().getScheduleSlots().size() + " sessions " ;
+    }
+
+
+    private String treatNextSessionQuestions(){
+        /* for test 1524466800000l <- 23/04 à 8h  */
+        List<ScheduleSlot> resultSessions = new ArrayList<>();
+        final long currentTime = 1524466800000l ;
+        long nextStartSessiontime = 0l;
+
+        List<ScheduleSlot> slots = AgendaRepository.getInstance().getScheduleSlots();
+
+        ScheduleSlot a = slots.stream()
+                .peek(num -> System.out.println("will filter " + num))
+                .filter(x -> AgendaRepository.getInstance().getSession(x.sessionId) != null)
+                .filter(x -> AgendaRepository.getInstance().getSession(x.sessionId).language != null)
+                .filter(x -> x.startDate > currentTime)
+                .findFirst()
+                .orElse(null);
+
+    /* before Java8
+        Collections.sort(slots);
+        for (ScheduleSlot slot :slots ) {
+            Session session = AgendaRepository.getInstance().getSession(slot.sessionId);
+            if (session != null && session.language != null ) {
+                if (slot.startDate > currentTime){
+                    nextStartSessiontime = slot.startDate ;
+                    break;
+                }
+            }
+        }*/
+
+        resultSessions = AgendaRepository.getInstance().filtredScheduleSlot(a.startDate);
+        addListView(resultSessions);
+        return "next session are " + resultSessions.size() + "/" + AgendaRepository.getInstance().getScheduleSlots().size() + " sessions " ;
     }
 
     private void processAiResponse(AIResponse aiResponse) {
@@ -393,8 +453,6 @@ public class MakerDroidFragment extends Fragment implements AIListener {
                     for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
                         parameterString += "[" + entry.getKey() + ": " + entry.getValue() + "] ";
                     }
-
-                    addAnswerView("I got that!\n" + parameterString);
                     addAnswerView(treatQuestion(result.getParameters()));
                 } else {
                     addAnswerView("I got that, but no params... Try again");
