@@ -9,9 +9,9 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.1'
-        classpath 'com.google.gms:google-services:3.2.0' // google-services plugin
-        classpath 'io.fabric.tools:gradle:1.25.1'
+        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.google.gms:google-services:4.0.2' // google-services plugin
+        classpath 'io.fabric.tools:gradle:1.26.1'
     }
 }
 
@@ -24,6 +24,17 @@ allprojects {
         }
     }
 }
+
+//subprojects {
+//    project.configurations.all {
+//        resolutionStrategy.eachDependency { details ->
+//            if (details.requested.group == 'com.android.support'
+//                    && !details.requested.name.contains('multidex') ) {
+//                details.useVersion "$support_version"
+//            }
+//        }
+//    }
+//}
 
 task clean(type: Delete) {
     delete rootProject.buildDir

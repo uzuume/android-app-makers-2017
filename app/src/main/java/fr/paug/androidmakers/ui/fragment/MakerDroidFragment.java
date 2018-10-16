@@ -3,7 +3,6 @@ package fr.paug.androidmakers.ui.fragment;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -29,7 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -41,17 +39,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import ai.api.AIDataService;
-import ai.api.AIListener;
-import ai.api.AIServiceException;
-import ai.api.android.AIConfiguration;
-import ai.api.android.AIService;
-import ai.api.model.AIError;
-import ai.api.model.AIRequest;
-import ai.api.model.AIResponse;
-import ai.api.model.Metadata;
-import ai.api.model.Result;
-import ai.api.model.Status;
 import fr.paug.androidmakers.R;
 import fr.paug.androidmakers.manager.AgendaRepository;
 import fr.paug.androidmakers.model.Room;
@@ -59,17 +46,12 @@ import fr.paug.androidmakers.model.ScheduleSlot;
 import fr.paug.androidmakers.model.Session;
 import fr.paug.androidmakers.ui.activity.SessionDetailActivity;
 import fr.paug.androidmakers.ui.adapter.ScheduleSession;
+import fr.paug.androidmakers.ui.util.DetectIntentTexts;
 
-/**
- * Created by Jade on 20/03/2018
- */
-
-public class MakerDroidFragment extends Fragment implements AIListener {
+public class MakerDroidFragment extends Fragment {
 
     private static final String TAG = MakerDroidFragment.class.getSimpleName();
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
-    private AIConfiguration config;
-    AIDataService aiDataService;
     ScrollView scroll;
     LinearLayout botLayout;
     ImageButton botMicro;
@@ -78,9 +60,7 @@ public class MakerDroidFragment extends Fragment implements AIListener {
     ProgressBar botTreatingProgressBar;
     EditText editTextAsk;
     View separator;
-    private AIService aiService;
-    // Requesting permission to RECORD_AUDIO
-    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
+    private String[] permissions = {Manifest.permission.RECORD_AUDIO}; // Requesting permission to RECORD_AUDIO
     private int defaultPadding;
     private int largePadding;
     private LinearLayout.LayoutParams paramsQuestion;
@@ -88,6 +68,8 @@ public class MakerDroidFragment extends Fragment implements AIListener {
 
     private List<ScheduleSlot> scheduleSlots = AgendaRepository.getInstance().getScheduleSlots();
 
+    private String userLanguage;
+    private static final String projectId = "makerdroid-5dc04";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,17 +78,19 @@ public class MakerDroidFragment extends Fragment implements AIListener {
         setRetainInstance(true);
 
         if (Locale.getDefault().getLanguage().equals(new Locale("fr").getLanguage())) {
-            config = new AIConfiguration("97ef1441bcd540038c4add623c6f9610",
-                    AIConfiguration.SupportedLanguages.French,
-                    AIConfiguration.RecognitionEngine.System);
+            userLanguage = "fr-FR";
+//            config = new AIConfiguration("97ef1441bcd540038c4add623c6f9610",
+//                    AIConfiguration.SupportedLanguages.French,
+//                    AIConfiguration.RecognitionEngine.System);
         } else {
-            config = new AIConfiguration("97ef1441bcd540038c4add623c6f9610",
-                    AIConfiguration.SupportedLanguages.English,
-                    AIConfiguration.RecognitionEngine.System);
+            userLanguage = "en-US";
+//            config = new AIConfiguration("97ef1441bcd540038c4add623c6f9610",
+//                    AIConfiguration.SupportedLanguages.English,
+//                    AIConfiguration.RecognitionEngine.System);
         }
-        aiDataService = new AIDataService(config);
-        aiService = AIService.getService(this.getContext(), config);
-        aiService.setListener(this);
+//        aiDataService = new AIDataService(config);
+//        aiService = AIService.getService(this.getContext(), config);
+//        aiService.setListener(this);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -125,20 +109,20 @@ public class MakerDroidFragment extends Fragment implements AIListener {
         ActivityCompat.requestPermissions(this.getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
 
-        botMicro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideKeyboard();
-                aiService.startListening();
-            }
-        });
-
-        botListening.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                aiService.stopListening();
-            }
-        });
+//        botMicro.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                hideKeyboard();
+//                aiService.startListening();
+//            }
+//        });
+//
+//        botListening.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                aiService.stopListening();
+//            }
+//        });
 
         botTreatingProgressBar.animate();
 
@@ -249,16 +233,21 @@ public class MakerDroidFragment extends Fragment implements AIListener {
             hideKeyboard();
             editTextAsk.setText("");
             displayButton(ButtonType.TREATING);
-            final AIRequest aiRequest = new AIRequest();
-            aiRequest.setQuery(text);
-            new AiTask().execute(aiRequest);
+//            final AIRequest aiRequest = new AIRequest();
+//            aiRequest.setQuery(text);
+//            new AiTask().execute(aiRequest);
+            // call detecttextintent
+            try {
+                DetectIntentTexts.detectIntentTexts(projectId, text, "0", userLanguage, getContext());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        aiService.setListener(null);
     }
 
     @Override
@@ -266,22 +255,22 @@ public class MakerDroidFragment extends Fragment implements AIListener {
         super.onDestroyView();
     }
 
-    @Override
-    public void onResult(AIResponse aiResponse) {
-        processAiResponse(aiResponse);
-    }
-
-    @Override
-    public void onError(AIError aiError) {
-        displayButton(ButtonType.MIC);
-        try {
-            Log.i(TAG, "Result Error : " + aiError.getMessage());
-            Toast.makeText(this.getContext(), "An error occurred (" + aiError.getMessage() + ").\nPlease try again.", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Log.e(TAG, "Exception " + e.getMessage());
-            Toast.makeText(this.getContext(), "An error occurred.\nPlease try again.", Toast.LENGTH_SHORT).show();
-        }
-    }
+//    @Override
+//    public void onResult(AIResponse aiResponse) {
+//        processAiResponse(aiResponse);
+//    }
+//
+//    @Override
+//    public void onError(AIError aiError) {
+//        displayButton(ButtonType.MIC);
+//        try {
+//            Log.i(TAG, "Result Error : " + aiError.getMessage());
+//            Toast.makeText(this.getContext(), "An error occurred (" + aiError.getMessage() + ").\nPlease try again.", Toast.LENGTH_SHORT).show();
+//        } catch (Exception e) {
+//            Log.e(TAG, "Exception " + e.getMessage());
+//            Toast.makeText(this.getContext(), "An error occurred.\nPlease try again.", Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
     private void hideKeyboard() {
         // hide virtual keyboard
@@ -290,27 +279,27 @@ public class MakerDroidFragment extends Fragment implements AIListener {
             imm.hideSoftInputFromWindow(editTextAsk.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
-    @Override
-    public void onAudioLevel(float v) {
-    }
-
-    @Override
-    public void onListeningStarted() {
-        Log.d(TAG, "onListeningStarted");
-        displayButton(ButtonType.LISTENING);
-    }
-
-    @Override
-    public void onListeningCanceled() {
-        Log.d(TAG, "onListeningCanceled");
-        displayButton(ButtonType.MIC);
-    }
-
-    @Override
-    public void onListeningFinished() {
-        Log.d(TAG, "onListeningFinished");
-        displayButton(ButtonType.TREATING);
-    }
+//    @Override
+//    public void onAudioLevel(float v) {
+//    }
+//
+//    @Override
+//    public void onListeningStarted() {
+//        Log.d(TAG, "onListeningStarted");
+//        displayButton(ButtonType.LISTENING);
+//    }
+//
+//    @Override
+//    public void onListeningCanceled() {
+//        Log.d(TAG, "onListeningCanceled");
+//        displayButton(ButtonType.MIC);
+//    }
+//
+//    @Override
+//    public void onListeningFinished() {
+//        Log.d(TAG, "onListeningFinished");
+//        displayButton(ButtonType.TREATING);
+//    }
 
     private void displayButton(ButtonType button) {
         botMicro.setVisibility((button == ButtonType.MIC) ? View.VISIBLE : View.GONE);
@@ -368,60 +357,60 @@ public class MakerDroidFragment extends Fragment implements AIListener {
         addListView(resultSlots);
     }
 
-    private void processAiResponse(AIResponse aiResponse) {
-        try {
-
-            displayButton(ButtonType.MIC);
-
-            final Status status = aiResponse.getStatus();
-            Log.i(TAG, "Status: " + status.getCode() + " ErrorType: " + status.getErrorType());
-
-            final Result result = aiResponse.getResult();
-            Log.i(TAG, "Action: " + aiResponse.getResult().getAction());
-            Log.i(TAG, "Resolved query: " + result.getResolvedQuery());
-            Log.i(TAG, "Params: " + result.getParameters());
-
-
-            String speech = result.getFulfillment().getSpeech();
-            Log.i(TAG, "Speech: " + speech);
-            if (speech.isEmpty()) {
-                speech = getString(R.string.bot_answer_empty);
-            }
-
-            final Metadata metadata = result.getMetadata();
-            if (metadata != null) {
-                Log.i(TAG, "Intent: id> " + metadata.getIntentId() + " name> " + metadata.getIntentName());
-            }
-
-            addQuestionView(result.getResolvedQuery());
-            Map<String, JsonElement> data = result.getFulfillment().getData();
-
-            try {
-                assert metadata != null;
-                if (metadata.getIntentName().equalsIgnoreCase("sessions.byfilter")) {
-                    if (data.get("makerdroid") != null) {
-                        JsonObject makerdroidData = data.get("makerdroid").getAsJsonObject();
-                        JsonArray sessionsIds = makerdroidData.get("session_ids").getAsJsonArray();
-                        if (sessionsIds.size() == 0) {
-                            Log.d(TAG, "no sessions ids retrieved");
-                            addAnswerView(speech);
-                        } else {
-                            treatQuestion(sessionsIds);
-                        }
-                    } else {
-                        addAnswerView(speech);
-                    }
-                } else {
-                    addAnswerView(speech);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Exception getting data " + e.getMessage());
-                addAnswerView(speech);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Exception " + e.getMessage());
-        }
-    }
+//    private void processAiResponse(AIResponse aiResponse) {
+//        try {
+//
+//            displayButton(ButtonType.MIC);
+//
+//            final Status status = aiResponse.getStatus();
+//            Log.i(TAG, "Status: " + status.getCode() + " ErrorType: " + status.getErrorType());
+//
+//            final Result result = aiResponse.getResult();
+//            Log.i(TAG, "Action: " + aiResponse.getResult().getAction());
+//            Log.i(TAG, "Resolved query: " + result.getResolvedQuery());
+//            Log.i(TAG, "Params: " + result.getParameters());
+//
+//
+//            String speech = result.getFulfillment().getSpeech();
+//            Log.i(TAG, "Speech: " + speech);
+//            if (speech.isEmpty()) {
+//                speech = getString(R.string.bot_answer_empty);
+//            }
+//
+//            final Metadata metadata = result.getMetadata();
+//            if (metadata != null) {
+//                Log.i(TAG, "Intent: id> " + metadata.getIntentId() + " name> " + metadata.getIntentName());
+//            }
+//
+//            addQuestionView(result.getResolvedQuery());
+//            Map<String, JsonElement> data = result.getFulfillment().getData();
+//
+//            try {
+//                assert metadata != null;
+//                if (metadata.getIntentName().equalsIgnoreCase("sessions.byfilter")) {
+//                    if (data.get("makerdroid") != null) {
+//                        JsonObject makerdroidData = data.get("makerdroid").getAsJsonObject();
+//                        JsonArray sessionsIds = makerdroidData.get("session_ids").getAsJsonArray();
+//                        if (sessionsIds.size() == 0) {
+//                            Log.d(TAG, "no sessions ids retrieved");
+//                            addAnswerView(speech);
+//                        } else {
+//                            treatQuestion(sessionsIds);
+//                        }
+//                    } else {
+//                        addAnswerView(speech);
+//                    }
+//                } else {
+//                    addAnswerView(speech);
+//                }
+//            } catch (Exception e) {
+//                Log.e(TAG, "Exception getting data " + e.getMessage());
+//                addAnswerView(speech);
+//            }
+//        } catch (Exception e) {
+//            Log.e(TAG, "Exception " + e.getMessage());
+//        }
+//    }
 
     private void addCarouselView(List<ScheduleSlot> slots) {
 
@@ -522,24 +511,24 @@ public class MakerDroidFragment extends Fragment implements AIListener {
         MIC, LISTENING, TREATING, SEND
     }
 
-    private class AiTask extends AsyncTask<AIRequest, Void, AIResponse> {
-        @Override
-        protected AIResponse doInBackground(AIRequest... requests) {
-            final AIRequest request = requests[0];
-            try {
-                return aiDataService.request(request);
-            } catch (AIServiceException e) {
-                Log.e(TAG, "Exception " + e.getMessage());
-                Toast.makeText(MakerDroidFragment.this.getContext(), "An error occurred.\nPlease try again.", Toast.LENGTH_SHORT).show();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(AIResponse aiResponse) {
-            if (aiResponse != null) {
-                processAiResponse(aiResponse);
-            }
-        }
-    }
+//    private class AiTask extends AsyncTask<AIRequest, Void, AIResponse> {
+//        @Override
+//        protected AIResponse doInBackground(AIRequest... requests) {
+//            final AIRequest request = requests[0];
+//            try {
+//                return aiDataService.request(request);
+//            } catch (AIServiceException e) {
+//                Log.e(TAG, "Exception " + e.getMessage());
+//                Toast.makeText(MakerDroidFragment.this.getContext(), "An error occurred.\nPlease try again.", Toast.LENGTH_SHORT).show();
+//            }
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(AIResponse aiResponse) {
+//            if (aiResponse != null) {
+//                processAiResponse(aiResponse);
+//            }
+//        }
+//    }
 }
